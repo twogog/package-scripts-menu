@@ -1,0 +1,93 @@
+{
+  "name": "package-scripts-menu",
+  "displayName": "Package Scripts Menu",
+  "description": "Запуск scripts из package.json, избранное и часто запускаемые команды отдельно для каждого репозитория.",
+  "version": "1.1.1",
+  "publisher": "twogog",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twogog/package-scripts-menu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/twogog/package-scripts-menu/issues"
+  },
+  "homepage": "https://github.com/twogog/package-scripts-menu#readme",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "keywords": ["npm", "scripts", "package.json", "pnpm", "yarn", "bun"],
+  "main": "./src/extension.js",
+  "extensionKind": ["workspace"],
+  "activationEvents": ["onLanguage:json", "onLanguage:jsonc", "onStartupFinished"],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "В недоверенной папке можно просматривать скрипты, но нельзя запускать команды."
+    },
+    "virtualWorkspaces": { "supported": false }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "packageScriptsMenu.open",
+        "title": "Открыть меню скриптов package.json",
+        "category": "Package Scripts",
+        "icon": "$(run-all)"
+      },
+      {
+        "command": "packageScriptsMenu.interruptTerminal",
+        "title": "Прервать активный скрипт (Ctrl+C)",
+        "category": "Package Scripts"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "packageScriptsMenu.interruptTerminal",
+        "key": "ctrl+c",
+        "when": "terminalFocus && !terminalTextSelected && packageScriptsMenu.terminalRunning"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        { "command": "packageScriptsMenu.interruptTerminal", "when": "false" }
+      ],
+      "editor/title": [
+        { "command": "packageScriptsMenu.open", "when": "resourceFilename == package.json", "group": "navigation@1" }
+      ],
+      "explorer/context": [
+        { "command": "packageScriptsMenu.open", "when": "resourceFilename == package.json", "group": "navigation@9" }
+      ]
+    },
+    "configuration": {
+      "title": "Package Scripts Menu",
+      "properties": {
+        "packageScriptsMenu.autoOpen": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": true,
+          "description": "Автоматически открывать меню рядом с package.json."
+        },
+        "packageScriptsMenu.packageManager": {
+          "type": "string",
+          "scope": "resource",
+          "enum": ["auto", "npm", "pnpm", "yarn", "bun"],
+          "default": "auto",
+          "description": "Менеджер пакетов. Auto использует packageManager или lock-файл в папке проекта либо родительской папке workspace."
+        },
+        "packageScriptsMenu.stopTimeout": {
+          "type": "integer",
+          "scope": "resource",
+          "minimum": 1,
+          "maximum": 60,
+          "default": 30,
+          "description": "Сколько секунд ждать завершения после Ctrl+C при нажатии «Остановить», прежде чем принудительно завершить задачу."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "test": "node --test test/core.test.js test/history.test.js",
+    "check": "node --check src/extension.js && node --check src/core.js && node --check src/history.js && node --check media/menu.js",
+    "package": "npx @vscode/vsce package --no-dependencies"
+  }
+}

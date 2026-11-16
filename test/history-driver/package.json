@@ -1,0 +1,8 @@
+{
+  "name": "package-scripts-history-test-driver",
+  "publisher": "local-tests",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.85.0" },
+  "main": "./index.js",
+  "activationEvents": ["onStartupFinished"]
+}
